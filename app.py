@@ -2,6 +2,7 @@ import streamlit as st
 from modules.pdf_reader import extract_text
 from modules.resume_details import get_resume_details
 from modules.skills import extract_skills
+from modules.ats_score import calculate_ats_score
 
 # -----------------------------------
 # Page Configuration
@@ -49,6 +50,9 @@ if uploaded_file is not None:
     # Skills
     skills = extract_skills(resume_text)
 
+    # ATS Score
+    ats_score = calculate_ats_score(skills)
+
     # -----------------------------------
     # Resume Details
     # -----------------------------------
@@ -58,13 +62,13 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.write(f"📁 **File Name:** {details['file_name']}")
-        st.write(f"📄 **Pages:** {details['pages']}")
-        st.write(f"🔤 **Characters:** {details['characters']}")
+        st.write(f"📁 File Name : {details['file_name']}")
+        st.write(f"📄 Total Pages : {details['pages']}")
+        st.write(f"🔤 Characters : {details['characters']}")
 
     with col2:
-        st.write(f"📦 **File Size:** {details['file_size']} KB")
-        st.write(f"📝 **Words:** {details['words']}")
+        st.write(f"📦 File Size : {details['file_size']} KB")
+        st.write(f"📝 Total Words : {details['words']}")
 
     st.divider()
 
@@ -83,17 +87,32 @@ if uploaded_file is not None:
     st.divider()
 
     # -----------------------------------
-    # Extracted Resume Text
+    # ATS Score
+    # -----------------------------------
+
+    st.subheader("🎯 ATS Score")
+
+    st.metric(
+        label="Resume ATS Score",
+        value=f"{ats_score}/100"
+    )
+
+    st.progress(ats_score / 100)
+
+    st.divider()
+
+    # -----------------------------------
+    # Resume Text
     # -----------------------------------
 
     st.subheader("📄 Extracted Resume Text")
 
     st.text_area(
-        label="Resume Content",
-        value=resume_text,
+        "Resume Content",
+        resume_text,
         height=350
     )
 
 else:
 
-    st.info("👆 Please upload your resume to start analysis.")
+    st.info("👆 Please upload your resume.")
